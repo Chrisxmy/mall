@@ -1,0 +1,47 @@
+{
+    "code" : 0,
+    "result": [
+        {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 123,
+            "img": "/static/1.jpg"
+        },
+          {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 123,
+            "img": "/static/1.jpg"
+        },
+          {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 123,
+            "img": "/static/1.jpg"
+        },
+          {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 1230,
+            "img": "/static/1.jpg"
+        },
+           {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 1230,
+            "img": "/static/1.jpg"
+        },
+           {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 1230,
+            "img": "/static/1.jpg"
+        },
+              {
+            "productId" : 1001,
+            "name": "xxx",
+            "price": 1230,
+            "img": "/static/1.jpg"
+        }
+    ]
+}
