@@ -86,7 +86,7 @@
                 </div>
                 <div class="cart-tab-5">
                   <div class="cart-item-opration">
-                    <a href="javascript:;" class="item-edit-btn" @click='delCartProduct(item.productId)'>
+                    <a href="javascript:;" class="item-edit-btn" @click='delCartProduct(item)'>
                       <svg class="icon icon-del">
                         <use xlink:href="#icon-del"></use>
                       </svg>
@@ -163,10 +163,11 @@ export default {
         }
       })
     },
-    delCartProduct(id) {
-      this.axios.post('/api/users/cart/del', { productId: id }).then(res => {
+    delCartProduct(item) {
+      this.axios.post('/api/users/cart/del', { productId: item.productId}).then(res => {
         res && (res = res.data)
         if (res.code === 0) {
+          this.$store.commit('updateCartCount',-item.productNum)
           this.getCart()
         }
       })
@@ -174,10 +175,12 @@ export default {
     editCart(flag, item) {
       switch (flag) {
         case 'add': item.productNum++
+        this.$store.commit('updateCartCount',1)
           break;
         case 'sub':
-          item.productNum--
+          item.productNum--   
           if (!item.productNum) { item.productNum = 1; return }
+           this.$store.commit('updateCartCount',-1)
           break;
         case 'check':
           item.checked = !item.checked

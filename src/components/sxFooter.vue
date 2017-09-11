@@ -1,33 +1,40 @@
-  <<template>
+  <template>
         <div class="footer">
-        <div class="footer__wrap">
-          <div class="footer__secondary">
-            <div class="footer__inner">
-              <div class="footer__region">
-                <span>Region</span>
-                <select class="footer__region__select">
-                  <option value="en-US">USA</option>
-                  <option value="zh-CN">China</option>
-                  <option value="in">India</option>
-                </select>
-              </div>
-              <div class="footer__secondary__nav">
-                <span>Copyright © 2017 IMooc All Rights Reserved.</span>
-                <a href="http://us.lemall.com/us/aboutUs.html">
-                  About Us
-                </a>
-                <a href="http://us.lemall.com/us/termsofUse.html">
-                  Terms &amp; Conditions
-                </a>
-                <a href="http://us.lemall.com/us/privacyPolicy.html">
-                  Privacy Policy
-                </a>
-              </div>
-            </div>
+          <div class="line">
+           
+                <span>Copyright © 2017 shel All Rights Reserved.</span>
+  
           </div>
-        </div>
       </div>
   </template>
+
+  <style lang='scss'>
+  .footer {
+  background-color: #f5f7fc;
+  color: #333;
+  position: relative;
+  max-width: 1280px;
+  margin: 0 auto;
+  text-align: center;
+  height:100px;
+  line-height: 100px;
+  .line {
+  border-top: 1px solid rgba(51, 51, 51, 0.15);
+  span{
+  color: #ada9a5;   
+  }
+}
+  
+}
+
+
+
+
+
+
+
+  
+  </style>
   
   
   

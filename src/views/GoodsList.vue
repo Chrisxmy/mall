@@ -41,7 +41,7 @@
                   </div>
                   <div class="main">
                     <div class="name">{{item.name}}</div>
-                    <div class="price">{{item.price}}</div>
+                    <div class="price">{{item.price | currency}}</div>
                     <div class="btn-area">
                       <a href="javascript:;" class="btn btn--m" @click='addCart(item.productId)'>加入购物车</a>
                     </div>
@@ -155,9 +155,9 @@ export default {
         }).then(res => {
           res && (res = res.data)
           if (res.code === 0) {
-              console.log(res)
+              this.$store.commit('updateCartCount',1)
           } else {
-            console.log(res.msg)
+            this.$store.commit('updateCartCount',1)
           }
         }).catch(e => {
            console.log(e.response)

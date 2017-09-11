@@ -23,7 +23,7 @@
     <div class="navbar">
       <div class="navbar-left-container">
         <a href="/">
-          <!--<img class="navbar-brand-logo" src="/static/logo.png">-->
+         <!--<img class="navbar-brand-logo" src="/static/logo.jpg">-->
         </a>
       </div>
       <div class="navbar-right-container" style="display: flex;">
@@ -80,15 +80,19 @@ export default {
       userName: 'shel', 
       userPwd: '123',
       errorTip: false,
-      loginModalFlag: false,
-      nickName: '',
-      cartCount: 0
+      loginModalFlag: false
     }
   },
   created() {
      this.checkLogin();
   },
   computed: {
+    nickName() {
+      return this.$store.state.nickName
+    },
+    cartCount() {
+      return this.$store.state.cartCount
+    }
   },
   methods: {
     checkLogin() {
@@ -97,14 +101,23 @@ export default {
         var path = this.$route.pathname;
         if (res.code === 0) {
           this.loginModalFlag = false;
-          this.nickName = res.data.userName;
-          this.cartCount = res.data.cartList.length
+          this.$store.commit('updateUserInfo',res.data.userName)
+          this.getCartCount(res.data.cartList)
+          
         } else {
           if (this.$route.path != "/goods") {
             this.$router.push("/goods");
           }
         }
       });
+    },
+    getCartCount(cartList) {
+      let cartCount = 0
+        cartList.forEach(item => {
+           cartCount +=item.productNum
+        });
+
+        this.$store.commit('initCartCount',cartCount)
     },
     login() {
       if (!this.userName || !this.userPwd) {
@@ -118,7 +131,7 @@ export default {
         res && (res = res.data);
         if (res.code === 0) {
           this.errorTip = false;
-          this.nickName = res.user.userName
+          this.checkLogin()
           this.loginModalFlag = false;
         } else {
           this.errorTip = true;
@@ -129,25 +142,22 @@ export default {
       this.axios.post("/api/users/logout").then((res) => {
            res && (res = res.data)
         if (res.code === 0) {
-             this.nickName = false
+              this.$store.commit('updateUserInfo','')
+              this.$store.commit('initCartCount',0)
         }
       })
-    },
-    getCartCount() {
-      this.axios.get("/api/users/getCartCount").then(res => {
-        var res = res.data;
-      });
     }
   }
 }
 </script>
 
-<style>
+<style lang='scss'>
 .header {
   width: 100%;
   background-color: white;
   font-family: "moderat", sans-serif;
   font-size: 16px;
+  border-top:1px solid red;
 }
 
 .navbar {

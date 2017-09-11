@@ -1,6 +1,7 @@
 const express = require("express");
 const router = express.Router();
 const users = require("../models/users");
+require('../util/util.js')
 
 
 
@@ -189,6 +190,79 @@ router.post("/delAddress", (req, res, next) => {
       next(e)
   }) 
 });
+
+
+router.post("/pay", (req, res, next) => {
+    (async ()=> {
+        let userId = req.cookies.userId, 
+        addressId = req.body.addressId, 
+        orderPrice = req.body.orderPrice,
+        goodsList = [], addressInfo ={};
+        let user = await users.findUsers(userId)
+        user.addressList.forEach(item => {
+            (item.street === addressId) && (addressInfo = item)
+        })
+        user._doc.cartList.filter(item => {
+            if(item.checked === true) {
+                goodsList.push(item)
+            }
+        })
+        let r1 = Math.floor(Math.random()*10)
+        let r2 = Math.floor(Math.random()*10)
+
+        let date = new Date().Format('yyyyMMddhhmmss')
+        let orderDate = new Date().Format('yyyy-MM-dd hh:mm:ss')
+
+        let orderId = '620' + r1 + date + r2
+
+        let order = {
+            orderId: orderId,
+            orderPrice:orderPrice,
+            address: addressInfo,
+            goodsList: goodsList,
+            status: '1',
+        }
+        user.orderList.push(order)
+        user.save()
+        return {
+            code: 0,
+            result:{
+                orderId: order.orderId,
+                orderPrice: order.orderPrice
+            }
+        }
+})()
+   .then(r => {
+       res.json(r)
+  })
+  .catch(e => {
+      next(e)
+  }) 
+});
+
+router.post("/getOrder", (req, res, next) => {
+    (async ()=> {
+        let userId = req.cookies.userId, 
+        orderId = req.body.orderId, order ={};
+       let user = await users.findUsers(userId)
+       user.orderList.forEach(item => {
+            (item.orderId === orderId) && (order = item)
+       })
+        return {
+            code: 0,
+            data: order
+        }
+})()
+   .then(r => {
+       res.json(r)
+  })
+  .catch(e => {
+      next(e)
+  }) 
+});
+
+
+
 
 
 

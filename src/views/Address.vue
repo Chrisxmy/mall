@@ -69,7 +69,7 @@
             <div class="addr-list">
               <ul>
                 <li v-for='(item,index) in addressFilter' v-if='addressList && addressList.length > 0'
-                  :class="{check: checkIndex === index}" @click='checkIndex=index'>
+                  :class="{check: checkIndex === index}" @click='selectAddress(item,index)'>
                   <dl>
                     <dt>{{item.userName}}</dt>
                     <dd class="address">{{item.street}}</dd>
@@ -134,7 +134,7 @@
             </div>
           </div>
           <div class="next-btn-wrap">
-            <a class="btn btn--m btn--red" href="#">Next</a>
+            <router-link :to="{name: 'OrderConfirm',query:{addressId:selectedAddId}}" class="btn btn--m btn--red" href="#">Next</router-link>
           </div>
         </div>
       </div>
@@ -154,7 +154,8 @@ export default {
     return {
       addressList: [],
       limit:3,
-      checkIndex:0
+      checkIndex:0,
+      selectedAddId: ''
     }
   },
   computed: {
@@ -163,11 +164,27 @@ export default {
     },
   },
   methods: {
+    selectAddress(item,index) {
+      if(item){
+         this.checkIndex = index;
+         this.selectedAddId =item.street
+      } else {
+        this.addressList.forEach(item => {
+          if(item.default === true) {
+            this.selectedAddId = item.street;
+            this.checkIndex = this.addressList.indexOf(item)
+          } else {
+             this.selectedAddId = this.addressList[0].street
+          }
+        })
+      }
+    },
     getAddressList() {
       this.axios.get('/api/users/addressList').then(res => {
         res && (res = res.data)
         if (res.code === 0) {
           this.addressList = res.data
+          this.selectAddress()
         }
       })
     },
@@ -200,6 +217,7 @@ export default {
   },
   created() {
     this.getAddressList()
+    
   },
   components: {
     sxFooter,
