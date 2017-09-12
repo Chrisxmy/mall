@@ -101,7 +101,7 @@
           <div class="cart-foot-inner">
             <div class="cart-foot-l">
               <div class="item-all-check">
-                <a href="javascipt:;" @click='checkAll' >
+                <a href="javascipt:;" @click='checkAll'>
                   <span class="checkbox-btn item-check-btn" :class="{'check':checkAllFlag}">
                     <svg class="icon icon-ok">
                       <use xlink:href="#icon-ok" />
@@ -125,23 +125,27 @@
       </div>
     </div>
     <sxFooter></sxFooter>
+    <confirm v-show="showDialog" :dialog-option="dialogOption" ref="dialog"></confirm>
   </div>
 </template>
 <script>
 import sxHeader from '../components/sxHeader'
 import sxFooter from '../components/sxFooter'
 import bread from '../components/bread'
+import confirm from '@/base/messageBox/confirm.vue'
 export default {
   data() {
     return {
-      cartList: []
+      cartList: [],
+      showDialog: false,
+      dialogOption: {}
     }
   },
   computed: {
-      totalPrice() {
+    totalPrice() {
       let price = 0;
       this.cartList.forEach(item => {
-        item.checked === true && (price += parseFloat(item.price)* parseFloat(item.productNum))
+        item.checked === true && (price += parseFloat(item.price) * parseFloat(item.productNum))
       })
       return price
     },
@@ -164,68 +168,75 @@ export default {
       })
     },
     delCartProduct(item) {
-      this.axios.post('/api/users/cart/del', { productId: item.productId}).then(res => {
-        res && (res = res.data)
-        if (res.code === 0) {
-          this.$store.commit('updateCartCount',-item.productNum)
-          this.getCart()
-        }
+      this.showDialog = true;
+      this.$refs.dialog.confirm().then(() => {
+        this.showDialog = false;
+        this.axios.post('/api/users/cart/del', { productId: item.productId }).then(res => {
+          res && (res = res.data)
+          if (res.code === 0) {
+            this.$store.commit('updateCartCount', -item.productNum)
+            this.getCart()
+          }
+        })
+      }).catch(() => {
+        this.showDialog = false;
       })
     },
     editCart(flag, item) {
       switch (flag) {
         case 'add': item.productNum++
-        this.$store.commit('updateCartCount',1)
+          this.$store.commit('updateCartCount', 1)
           break;
         case 'sub':
-          item.productNum--   
+          item.productNum--
           if (!item.productNum) { item.productNum = 1; return }
-           this.$store.commit('updateCartCount',-1)
+          this.$store.commit('updateCartCount', -1)
           break;
         case 'check':
           item.checked = !item.checked
           break;
       }
-          let params = {
-            productId: item.productId,
-            productNum: item.productNum,
-            checked: item.checked
-          }
-          this.axios.post('/api/users/editCart', params).then(res => {
-            res && (res = res.data)
-            if (res.code === 0) {
-              console.log(res)
-            }
-          })
+      let params = {
+        productId: item.productId,
+        productNum: item.productNum,
+        checked: item.checked
+      }
+      this.axios.post('/api/users/editCart', params).then(res => {
+        res && (res = res.data)
+        if (res.code === 0) {
+          console.log(res)
+        }
+      })
     },
     checkAll() {
-         let flag = !this.checkAllFlag
-         this.cartList.forEach(item => {
-             item.checked = flag ? true : false
-         })
-         this.axios.post('/api/users/editCheckAll',{
-           checkAll: flag
-         }).then(res => {
-             res && (res = res.data)
-            if (res.code === 0) {
-              console.log(res.data)
-            }           
-         })
+      let flag = !this.checkAllFlag
+      this.cartList.forEach(item => {
+        item.checked = flag ? true : false
+      })
+      this.axios.post('/api/users/editCheckAll', {
+        checkAll: flag
+      }).then(res => {
+        res && (res = res.data)
+        if (res.code === 0) {
+          console.log(res.data)
+        }
+      })
     },
-    checkout(){
-    this.totalPrice === 0 ? this.$router.push({name: 'Cart'}) 
-    : this.$router.push({name: 'Address'})
+    checkout() {
+      this.totalPrice === 0 ? this.$router.push({ name: 'Cart' })
+        : this.$router.push({ name: 'Address' })
     }
-    },
-    created() {
-      this.getCart()
-    },
-    components: {
-      sxHeader,
-      sxFooter,
-      bread
-    }
+  },
+  created() {
+    this.getCart()
+  },
+  components: {
+    sxHeader,
+    sxFooter,
+    bread,
+    confirm
   }
+}
 </script>
 <style>
 .input-sub,

@@ -9,10 +9,14 @@ import infiniteScroll from  'vue-infinite-scroll'
 import {currency} from './commom/util/currency.js'
 import store from './store/index.js'
 
+
+
+
 import './commom/css/base.css'
 import './commom/css/checkout.css'
 import './commom/css/login.css'
 import './commom/css/product.css'
+import './commom/css/iconfont.css'
 
 Vue.prototype.axios = axios
 

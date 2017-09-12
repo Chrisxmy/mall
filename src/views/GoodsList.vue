@@ -10,9 +10,7 @@
           <span class="sortby">Sort by:</span>
           <a href="javascript:;" class="default cur">Default</a>
           <a href="javascript:;" class="price" @click='sortPrice'>Price
-            <svg class="icon icon-arrow-short">
-              <use xlink:href="#icon-arrow-short"></use>
-            </svg>
+            <span class='iconfont icon-xijiantou'></span>
           </a>
           <a href="javascript:;" class="filterby stopPop" @click='showPop'>Filter by</a>
         </div>
@@ -22,7 +20,7 @@
             <dl class="filter-price">
               <dt>Price:</dt>
               <dd @click='closePop'>
-                <a href="javascript:;" :class="{'cur':priceChecked === 'all'}"  @click="setPriceFilter('all')">All</a>
+                <a href="javascript:;" :class="{'cur':priceChecked === 'all'}" @click="setPriceFilter('all')">All</a>
               </dd>
               <dd v-for='(price,index) in priceFilter' @click='setPriceFilter(index)'>
                 <a href="javascript:;" :class="{'cur':priceChecked ===index}" @click='closePop'>{{price.startPrice}} - {{price.endPrice}}</a>
@@ -40,7 +38,7 @@
                     </a>
                   </div>
                   <div class="main">
-                    <div class="name">{{item.name}}</div>
+                    <div class="name">{{item.productName}}</div>
                     <div class="price">{{item.price | currency}}</div>
                     <div class="btn-area">
                       <a href="javascript:;" class="btn btn--m" @click='addCart(item.productId)'>加入购物车</a>
@@ -50,12 +48,13 @@
               </ul>
               <div v-infinite-scroll="loadMore" infinite-scroll-disabled="busy" infinite-scroll-distance="5">
                 <img src='../commom/loading-spinning-bubbles.svg' v-if='loading'>
-           </div>
+              </div>
             </div>
           </div>
         </div>
       </div>
     </div>
+    <confirm v-show="showDialog" :dialog-option="dialogOption" ref="dialog"></confirm>
     <div class='md-overlay' v-show='overLayFlag' @click='closePop()'></div>
     <sxFooter></sxFooter>
   </div>
@@ -64,9 +63,14 @@
 import sxHeader from '@/components/sxHeader'
 import sxFooter from '@/components/sxFooter'
 import bread from '@/components/bread'
+import Toast from '@/base/toast/toast.js'
+
+import confirm from '@/base/messageBox/confirm.vue'
 export default {
   data() {
     return {
+      dialogOption: {},
+      showDialog: false,
       goodList: [],
       userInfo: {},
       priceFilter: [
@@ -94,7 +98,7 @@ export default {
       page: 1,
       pageSize: 3,
       busy: true,
-      loading:false
+      loading: false
     }
   },
   methods: {
@@ -111,14 +115,14 @@ export default {
         if (res.code === 0) {
           this.loading = false
           if (flag) {
-            this.goodList = this.goodList.concat(res.data)   
+            this.goodList = this.goodList.concat(res.data)
             res.data.length === 0 ? (this.busy = true) : (this.busy = false)
           } else {
             this.goodList = res.data
-            this.busy  = false  
+            this.busy = false
           }
         }
-         this.loading = false
+        this.loading = false
       }).catch((e) => {
         console.log(e)
         this.loading = false
@@ -150,19 +154,27 @@ export default {
       this.overLayFlag = false
     },
     addCart(id) {
+      this.showDialog = true;
+      this.$refs.dialog.confirm().then(() => {
+        this.showDialog = false;
+
         this.axios.post('/api/goods/addCart', {
-          productId:id
+          productId: id
         }).then(res => {
           res && (res = res.data)
           if (res.code === 0) {
-              this.$store.commit('updateCartCount',1)
+            this.$store.commit('updateCartCount', 1)
           } else {
-            this.$store.commit('updateCartCount',1)
+            this.$store.commit('updateCartCount', 1)
+
           }
         }).catch(e => {
-           console.log(e.response)
+         Toast(e.response.data.msg)
 
         })
+      }).catch(() => {
+         this.showDialog = false;
+      })
     }
   },
   created() {
@@ -171,7 +183,8 @@ export default {
   components: {
     sxHeader,
     sxFooter,
-    bread
+    bread,
+    confirm
   }
 }
 </script>
